@@ -1,0 +1,104 @@
+openapi: "3.0.0"
+servers:
+  - url: "http://0.0.0.0:8081/"
+info:
+  description: "Config app"
+  version: "1.0"
+  title: "SMNS"
+paths:
+  /tweets:
+    get:
+      tags:
+      - "Tweets"
+      operationId: "app.get_tweets"
+      summary: "The tweets data to be used by the app"
+      parameters:
+      - name: "lower_bound"
+        in: "query"
+        schema:
+          type: "integer"
+      responses:
+        "200":
+          description: "Return tweets"
+          content:
+            application/json:
+              schema:
+                type: "array"
+                items:
+                  $ref: "#/components/schemas/Tweet"
+
+  /tweets/{tweet_id}:
+    get:
+      tags:
+        - "Tweet"
+      operationId: "app.get_tweet"
+      summary: "Get a single tweet"
+      parameters:
+        - $ref: "#/components/parameters/tweet_id"
+      responses:
+        "200":
+          description: "Return tweet"
+        "404":
+          description: "Does not exist"
+    put:
+      tags:
+        - "Tweets"
+      operationId: app.put_tweet
+      summary: Create or update a tweet
+      parameters:
+        - $ref: '#/components/parameters/tweet_id'
+      responses:
+        '200':
+          description: tweet updated
+        '201':
+          description: New tweet created
+      requestBody:
+        content:
+          application/json:
+            schema:
+              x-body-name: tweet
+              $ref: '#/components/schemas/Tweet'
+    delete:
+      tags:
+        - "Tweets"
+      operationId: app.delete_tweet
+      summary: Remove a tweet
+      parameters:
+        - $ref: '#/components/parameters/tweet_id'
+      responses:
+        '204':
+          description: tweet was deleted
+        '404':
+          description: tweet does not exist
+components:
+  parameters:
+    tweet_id:
+      name: tweet_id
+      description: tweet's Unique identifier
+      in: path
+      required: true
+      schema:
+        type: integer
+  schemas:
+    Tweet:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: Unique identifier
+          example: 123
+          readOnly: true
+        tweet:
+          type: string
+          description: tweet text
+          example: "lorem ipsum"
+          minLength: 1
+          maxLength: 240
+        created:
+          type: string
+          format: date-time
+          description: Creation time
+          example: '2015-07-07T15:49:51.230+02:00'
+          readOnly: true
+
+
